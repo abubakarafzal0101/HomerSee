@@ -15,7 +15,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // connection database
-connectDB();
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.log("DB connection error:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
+  }
+});
 
 // routes
 app.get("/", (req, res) => {
