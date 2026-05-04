@@ -12,7 +12,7 @@ import userRouter from "./routes/userRoutes.js";
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "https://homersee-home.vercel.app"],
     credentials: true,
   }),
 );
