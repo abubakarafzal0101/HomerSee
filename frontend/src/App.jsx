@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { UserContext } from "./contexts/UserContextProvider";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 const App = () => {
   const { user } = useContext(UserContext);
   return (
@@ -14,6 +16,8 @@ const App = () => {
         <Route path="/" element={user ? <Home /> : <Login />} />
         <Route path="/login" element={user ? <Home /> : <Login />} />
         <Route path="/register" element={user ? <Home /> : <Register />} />
+        <Route path="/about" element={user ? <About /> : <Login />} />
+        <Route path="/contact" element={user ? <Contact /> : <Login />} />
       </Routes>
     </>
   );
