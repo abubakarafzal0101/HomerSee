@@ -13,6 +13,13 @@ const genToken = async (userId) => {
   }
 };
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+};
+
 // register User
 export const registerUser = async (req, res) => {
   try {
@@ -45,9 +52,7 @@ export const registerUser = async (req, res) => {
     });
     const token = await genToken(newUser._id);
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: true, // MUST for HTTPS
-      sameSite: "none", // MUST for cross-origin
+      ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -102,9 +107,7 @@ export const loginUser = async (req, res) => {
     // 5. create token
     const token = await genToken(user._id);
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: true, // MUST for HTTPS
-      sameSite: "none", // MUST for cross-origin
+      ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     });
     // 6. send response
@@ -126,11 +129,7 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    res.clearCookie("token", cookieOptions);
     return res.status(200).json({
       success: true,
       message: "Logout successful",
