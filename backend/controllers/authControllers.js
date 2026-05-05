@@ -59,8 +59,6 @@ export const registerUser = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User registered successfully",
-      token,
-      user: newUser,
     });
   } catch (error) {
     console.log(error, "Error in Registering User");
@@ -114,8 +112,6 @@ export const loginUser = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token,
-      user,
     });
   } catch (error) {
     console.log(error.message, "Error in Login User");
