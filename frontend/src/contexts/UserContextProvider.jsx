@@ -25,7 +25,7 @@ const UserContextProvider = ({ children }) => {
 
   useEffect(() => {
     getCurrentUser();
-  }, []);
+  }, [serverUrl]);
 
   const value = { user, getCurrentUser };
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
