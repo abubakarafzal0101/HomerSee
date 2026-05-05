@@ -2,15 +2,23 @@ import jwt from "jsonwebtoken";
 
 const isAuth = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    if (!token) {
+    const headers = req.headers;
+    if (!headers || !headers.authorization) {
       return res.status(401).json({
         success: false,
-        message: "Token not found, authorization denied",
+        message: "Unauthorized: No token provided",
       });
     }
-    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
 
+    const token = headers.authorization.split(" ")[1];
+
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded || !decoded.userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: Invalid token",
+      });
+    }
     req.userId = decoded.userId;
     next();
   } catch (error) {
