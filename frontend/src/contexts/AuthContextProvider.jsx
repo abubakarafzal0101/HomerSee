@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 export const AuthContext = createContext();
 import axios from "axios";
+import cookie from "cookiejs";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContextProvider";
@@ -58,6 +59,7 @@ const AuthContextProvider = ({ children }) => {
       });
       if (response?.data?.success) {
         toast.success(response.data.message);
+        cookie.remove("token");
         navigate("/login");
         getCurrentUser();
       }
