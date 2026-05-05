@@ -1,78 +1,84 @@
 import React, { createContext, useContext } from "react";
-export const AuthContext = createContext();
 import axios from "axios";
-import cookie from "cookiejs";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContextProvider";
+
+export const AuthContext = createContext();
+
 const AuthContextProvider = ({ children }) => {
   const serverUrl = import.meta.env.VITE_SERVER_URL;
   const navigate = useNavigate();
-  const { getCurrentUser } = useContext(UserContext);
+
+  const { setToken } = useContext(UserContext);
+
+  // 🔥 LOGIN
   const loginUser = async (formData) => {
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/login`,
         formData,
-        {
-          withCredentials: true,
-        },
+        { withCredentials: true },
       );
+
       if (response?.data?.success) {
         toast.success(response.data.message);
+
+        localStorage.setItem("token", response.data.token);
+
+        // 🔥 trigger update
+        setToken(response.data.token);
+
         navigate("/");
-        getCurrentUser();
       }
     } catch (error) {
       console.error("Login Error:", error);
-      toast.error(
-        error.response?.data?.message || "Login failed. Please try again.",
-      );
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
+
+  // 🔥 REGISTER
   const registerUser = async (formData) => {
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/register`,
         formData,
-        {
-          withCredentials: true,
-        },
+        { withCredentials: true },
       );
+
       if (response?.data?.success) {
         toast.success(response.data.message);
+        localStorage.setItem("token", response.data.token);
+        setToken(response.data.token);
         navigate("/");
-        getCurrentUser();
       }
     } catch (error) {
       console.error("Register Error:", error);
-      toast.error(
-        error.response?.data?.message || "Register failed. Please try again.",
-      );
+      toast.error(error.response?.data?.message || "Register failed");
     }
   };
 
-  const logoutUser = async () => {
+  // 🔥 LOGOUT (NO API CALL)
+  const logoutUser = () => {
     try {
-      const response = await axios.get(`${serverUrl}/api/auth/logout`, {
-        withCredentials: true,
-      });
-      if (response?.data?.success) {
-        toast.success(response.data.message);
-        cookie.remove("token");
-        navigate("/login");
-        getCurrentUser();
-      }
+      localStorage.removeItem("token");
+
+      setToken(null);
+
+      toast.success("Logged out successfully");
+
+      navigate("/login");
     } catch (error) {
       console.error("Logout Error:", error);
-      toast.error(
-        error.response?.data?.message || "Logout failed. Please try again.",
-      );
+      toast.error("Logout failed");
     }
   };
 
-  const value = { loginUser, registerUser, logoutUser };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ loginUser, registerUser, logoutUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthContextProvider;

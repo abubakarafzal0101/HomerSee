@@ -1,17 +1,29 @@
 import React, { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-export const UserContext = createContext();
-import { toast } from "react-hot-toast";
 import axios from "axios";
+
+export const UserContext = createContext();
+
 const UserContextProvider = ({ children }) => {
   const serverUrl = import.meta.env.VITE_SERVER_URL;
-  const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
-  const getCurrentUser = async () => {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  // 🔥 fetch user when token changes
+  const getCurrentUser = async (currentToken) => {
     try {
+      if (!currentToken) {
+        setUser(null);
+        return;
+      }
+
       const response = await axios.get(`${serverUrl}/api/user/me`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${currentToken}`,
+        },
       });
+
       if (response?.data?.success) {
         setUser(response.data.user);
       } else {
@@ -23,11 +35,29 @@ const UserContextProvider = ({ children }) => {
     }
   };
 
+  // 🔥 auto run when token changes
   useEffect(() => {
-    getCurrentUser();
-  }, [serverUrl]);
+    getCurrentUser(token);
+  }, [token]);
 
-  const value = { user, getCurrentUser };
+  // 🔥 sync across tabs
+  useEffect(() => {
+    const syncToken = () => {
+      setToken(localStorage.getItem("token"));
+    };
+
+    window.addEventListener("storage", syncToken);
+    return () => window.removeEventListener("storage", syncToken);
+  }, []);
+
+  const value = {
+    user,
+    setUser,
+    token,
+    setToken,
+    getCurrentUser,
+  };
+
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
