@@ -18,7 +18,6 @@ const AuthContextProvider = ({ children }) => {
       const response = await axios.post(
         `${serverUrl}/api/auth/login`,
         formData,
-        { withCredentials: true },
       );
 
       if (response?.data?.success) {
@@ -43,7 +42,6 @@ const AuthContextProvider = ({ children }) => {
       const response = await axios.post(
         `${serverUrl}/api/auth/register`,
         formData,
-        { withCredentials: true },
       );
 
       if (response?.data?.success) {
