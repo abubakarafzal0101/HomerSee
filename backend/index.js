@@ -3,22 +3,9 @@ dotenv.config();
 import express from "express";
 const app = express();
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
-
-// middlewares
-app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://homersee-home.vercel.app"],
-  }),
-);
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-
 // connection database
 app.use(async (req, res, next) => {
   try {
@@ -32,6 +19,17 @@ app.use(async (req, res, next) => {
     });
   }
 });
+
+// middlewares
+app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://homersee-home.vercel.app"],
+  }),
+);
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 // routes
 app.get("/", (req, res) => {
