@@ -18,7 +18,6 @@ const UserContextProvider = ({ children }) => {
       }
 
       const response = await axios.get(`${serverUrl}/api/user/me`, {
-        withCredentials: true,
         headers: {
           Authorization: `Bearer ${currentToken}`,
         },
