@@ -1,7 +1,6 @@
 import ListingModel from "../models/listingModel.js";
-import UserModel from "../models/userModel.js";
 import cloudinary from "../config/cloudinary.js";
-import fs from "fs";
+import streamifier from "streamifier";
 export const addListing = async (req, res) => {
   try {
     const { title, description, price, location, contact, category } = req.body;
@@ -28,49 +27,27 @@ export const addListing = async (req, res) => {
       });
     }
 
-    let image;
-    let imagePath = req.file.path;
+    const uploadFromBuffer = () =>
+      new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "listings" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
 
-    // Upload to Cloudinary
-    try {
-      const uploadResult = await cloudinary.uploader.upload(imagePath, {
-        folder: "listings",
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
       });
-      image = uploadResult.secure_url;
-    } catch (uploadError) {
-      console.error("Cloudinary upload error:", uploadError);
 
-      // delete local file if upload fails
-      if (imagePath) {
-        try {
-          fs.unlinkSync(imagePath);
-        } catch (err) {
-          console.error("File delete error:", err);
-        }
-      }
+    const result = await uploadFromBuffer();
 
-      return res.status(500).json({
-        success: false,
-        message: "Image upload failed",
-      });
-    }
-
-    // 🧹 Delete local file after upload
-    if (imagePath) {
-      try {
-        fs.unlinkSync(imagePath);
-      } catch (err) {
-        console.error("File delete error:", err);
-      }
-    }
-
-    // 🟢 Save to DB
     const newListing = new ListingModel({
       user: userId,
       title,
       description,
       price,
-      image,
+      image: result.secure_url,
       location,
       contact,
       category,
@@ -86,15 +63,6 @@ export const addListing = async (req, res) => {
   } catch (error) {
     console.error("Error adding listing:", error);
 
-    // 🧹 Safety cleanup
-    if (req.file && req.file.path) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (err) {
-        console.error("Cleanup delete error:", err);
-      }
-    }
-
     return res.status(500).json({
       success: false,
       message: "Server error while adding listing",
@@ -106,7 +74,6 @@ export const updateListing = async (req, res) => {
     const { title, description, price, location, contact, category } = req.body;
     const listingId = req.params.id;
 
-    // 🔴 Validation
     if (
       !title ||
       !description ||
@@ -131,45 +98,25 @@ export const updateListing = async (req, res) => {
 
     let image = listing.image;
 
-    // 🟡 If new image uploaded
+    // 🔥 new image upload
     if (req.file) {
-      const imagePath = req.file.path;
+      const uploadFromBuffer = () =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "listings" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            },
+          );
 
-      try {
-        const uploadResult = await cloudinary.uploader.upload(imagePath, {
-          folder: "listings",
+          streamifier.createReadStream(req.file.buffer).pipe(stream);
         });
 
-        image = uploadResult.secure_url;
-      } catch (uploadError) {
-        console.error("Cloudinary upload error:", uploadError);
-
-        // delete local file if upload fails
-        if (imagePath) {
-          try {
-            fs.unlinkSync(imagePath);
-          } catch (err) {
-            console.error("File delete error:", err);
-          }
-        }
-
-        return res.status(500).json({
-          success: false,
-          message: "Image upload failed",
-        });
-      }
-
-      // 🧹 delete local file after upload
-      if (imagePath) {
-        try {
-          fs.unlinkSync(imagePath);
-        } catch (err) {
-          console.error("File delete error:", err);
-        }
-      }
+      const result = await uploadFromBuffer();
+      image = result.secure_url;
     }
 
-    // 🟢 Update fields
     listing.title = title;
     listing.description = description;
     listing.price = price;
@@ -187,15 +134,6 @@ export const updateListing = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating listing:", error);
-
-    // 🧹 Safety cleanup
-    if (req.file && req.file.path) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (err) {
-        console.error("Cleanup delete error:", err);
-      }
-    }
 
     return res.status(500).json({
       success: false,
