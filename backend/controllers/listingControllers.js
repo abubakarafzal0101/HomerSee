@@ -72,23 +72,11 @@ export const addListing = async (req, res) => {
 export const updateListing = async (req, res) => {
   try {
     const { title, description, price, location, contact, category } = req.body;
+
     const listingId = req.params.id;
 
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !location ||
-      !contact ||
-      !category
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
     const listing = await ListingModel.findById(listingId);
+
     if (!listing) {
       return res.status(404).json({
         success: false,
@@ -96,9 +84,10 @@ export const updateListing = async (req, res) => {
       });
     }
 
+    // 🟢 KEEP OLD IMAGE BY DEFAULT
     let image = listing.image;
 
-    // 🔥 new image upload
+    // 🔥 ONLY UPLOAD IF NEW FILE EXISTS
     if (req.file) {
       const uploadFromBuffer = () =>
         new Promise((resolve, reject) => {
@@ -117,13 +106,14 @@ export const updateListing = async (req, res) => {
       image = result.secure_url;
     }
 
+    // UPDATE FIELDS
     listing.title = title;
     listing.description = description;
     listing.price = price;
-    listing.image = image;
     listing.location = location;
     listing.contact = contact;
     listing.category = category;
+    listing.image = image; // 👈 always safe now
 
     await listing.save();
 
@@ -133,8 +123,7 @@ export const updateListing = async (req, res) => {
       listing,
     });
   } catch (error) {
-    console.error("Error updating listing:", error);
-
+    console.error(error);
     return res.status(500).json({
       success: false,
       message: "Server error while updating listing",

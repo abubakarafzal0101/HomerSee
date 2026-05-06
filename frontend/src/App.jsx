@@ -8,6 +8,7 @@ import { UserContext } from "./contexts/UserContextProvider";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
+import MyListings from "./pages/MyListings";
 const App = () => {
   const { user } = useContext(UserContext);
   return (
@@ -20,6 +21,10 @@ const App = () => {
         <Route path="/about" element={user ? <About /> : <Login />} />
         <Route path="/contact" element={user ? <Contact /> : <Login />} />
         <Route path="/profile" element={user ? <Profile /> : <Login />} />
+        <Route
+          path="/my-listings"
+          element={user ? <MyListings /> : <Login />}
+        />
       </Routes>
     </>
   );
