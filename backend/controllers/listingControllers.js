@@ -148,7 +148,15 @@ export const deleteListing = async (req, res) => {
 
 export const getAllListings = async (req, res) => {
   try {
-    const listings = await ListingModel.find().populate("user", "name email");
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const listings = await ListingModel.find({ user: userId }).populate(
+      "user",
+      "name email",
+    );
     return res.status(200).json({ success: true, listings });
   } catch (error) {
     console.error("Error getting all listings:", error);
