@@ -58,7 +58,7 @@ const SkeletonCard = () => (
 
 /* ─── main component ──────────────────────────────────────────── */
 const MyListings = () => {
-  const { listings, deleteListing, addListing, updateListingHandler } =
+  const { userListings, deleteListing, addListing, updateListingHandler } =
     useContext(ListingContext);
 
   const [filterListing, setFilterListing] = useState("all");
@@ -84,7 +84,7 @@ const MyListings = () => {
   const [imagePreview, setImagePreview] = useState(null);
 
   /* ── filter ── */
-  const filteredListings = listings.filter((listing) => {
+  const filteredListings = userListings.filter((listing) => {
     if (filterListing === "all") return true;
     return listing.category === filterListing;
   });
@@ -190,8 +190,8 @@ const MyListings = () => {
                 My Listings
               </h1>
               <p className="text-sm text-gray-400 mt-1">
-                {listings.length} listing{listings.length !== 1 ? "s" : ""}{" "}
-                total
+                {userListings.length} listing
+                {userListings.length !== 1 ? "s" : ""} total
               </p>
             </motion.div>
           </div>

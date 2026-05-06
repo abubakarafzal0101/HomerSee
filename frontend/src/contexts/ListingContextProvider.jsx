@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 const ListingContextProvider = ({ children }) => {
   const serverUrl = import.meta.env.VITE_SERVER_URL;
   const [listings, setListings] = useState([]);
+  const [userListings, setUserListings] = useState([]);
   const token = localStorage.getItem("token");
   const fetchListings = async () => {
     try {
@@ -86,11 +87,43 @@ const ListingContextProvider = ({ children }) => {
     }
   };
 
+  const fetchUserListings = async () => {
+    try {
+      const response = await axios.get(
+        `${serverUrl}/api/listing/get-user-listings`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.data.success) {
+        console.log("Fetched User Listings:", response.data.listings);
+        setUserListings(response.data.listings);
+      }
+    } catch (error) {
+      console.error("Fetch User Listings Error:", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to fetch user listings",
+      );
+    }
+  };
+
   useEffect(() => {
     fetchListings();
+    fetchUserListings();
   }, [serverUrl, token]);
 
-  const value = { listings, deleteListing, addListing, updateListingHandler };
+  const value = {
+    listings,
+    deleteListing,
+    addListing,
+    updateListingHandler,
+    userListings,
+    fetchUserListings,
+    fetchListings,
+  };
   return (
     <ListingContext.Provider value={value}>{children}</ListingContext.Provider>
   );

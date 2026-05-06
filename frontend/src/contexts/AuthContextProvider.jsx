@@ -3,6 +3,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContextProvider";
+import { ListingContext } from "./ListingContextProvider";
 
 export const AuthContext = createContext();
 
@@ -11,6 +12,7 @@ const AuthContextProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const { setToken } = useContext(UserContext);
+  const { fetchUserListings, fetchListings } = useContext(ListingContext);
 
   // 🔥 LOGIN
   const loginUser = async (formData) => {
@@ -27,6 +29,8 @@ const AuthContextProvider = ({ children }) => {
 
         // 🔥 trigger update
         setToken(response.data.token);
+        fetchUserListings();
+        fetchListings();
 
         navigate("/");
       }
@@ -48,6 +52,8 @@ const AuthContextProvider = ({ children }) => {
         toast.success(response.data.message);
         localStorage.setItem("token", response.data.token);
         setToken(response.data.token);
+        fetchUserListings();
+        fetchListings();
         navigate("/");
       }
     } catch (error) {

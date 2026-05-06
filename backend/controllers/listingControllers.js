@@ -148,15 +148,7 @@ export const deleteListing = async (req, res) => {
 
 export const getAllListings = async (req, res) => {
   try {
-    const userId = req.userId;
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
-
-    const listings = await ListingModel.find({ user: userId }).populate(
-      "user",
-      "name email",
-    );
+    const listings = await ListingModel.find().populate("user", "name email");
     return res.status(200).json({ success: true, listings });
   } catch (error) {
     console.error("Error getting all listings:", error);
@@ -184,5 +176,18 @@ export const getSingleListing = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Server error while getting listing" });
+  }
+};
+
+export const getUserListings = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const listings = await ListingModel.find({ user: userId });
+    return res.status(200).json({ success: true, listings });
+  } catch (error) {
+    console.error("Error getting user listings:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error while getting listings" });
   }
 };
