@@ -6,6 +6,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import listingRouter from "./routes/listingRoutes.js";
 // connection database
 app.use(async (req, res, next) => {
   try {
@@ -37,6 +38,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/listing", listingRouter);
 
 if (process.env.NODE_ENV === "development") {
   app.listen(process.env.PORT, () => {
