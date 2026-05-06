@@ -9,6 +9,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import MyListings from "./pages/MyListings";
+import SingleListing from "./pages/SingleListing";
+import AllListings from "./pages/AllListings";
 const App = () => {
   const { user } = useContext(UserContext);
   return (
@@ -22,8 +24,16 @@ const App = () => {
         <Route path="/contact" element={user ? <Contact /> : <Login />} />
         <Route path="/profile" element={user ? <Profile /> : <Login />} />
         <Route
+          path="/listing/:id"
+          element={user ? <SingleListing /> : <Login />}
+        />
+        <Route
           path="/my-listings"
           element={user ? <MyListings /> : <Login />}
+        />
+        <Route
+          path="/all-listings"
+          element={user ? <AllListings /> : <Login />}
         />
       </Routes>
     </>

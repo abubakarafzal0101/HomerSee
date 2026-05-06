@@ -9,11 +9,7 @@ const ListingContextProvider = ({ children }) => {
   const token = localStorage.getItem("token");
   const fetchListings = async () => {
     try {
-      const response = await axios.get(`${serverUrl}/api/listing/get-all`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(`${serverUrl}/api/listing/get-all`);
 
       if (response.data.success) {
         console.log("Fetched Listings:", response.data.listings);
@@ -38,6 +34,7 @@ const ListingContextProvider = ({ children }) => {
       if (response.data.success) {
         toast.success("Listing deleted successfully");
         fetchListings();
+        fetchUserListings();
       }
     } catch (error) {
       console.error("Delete Listing Error:", error);
@@ -59,6 +56,7 @@ const ListingContextProvider = ({ children }) => {
       if (response.data.success) {
         toast.success("Listing added successfully");
         fetchListings();
+        fetchUserListings();
       }
     } catch (error) {
       console.error("Add Listing Error:", error);
@@ -80,6 +78,7 @@ const ListingContextProvider = ({ children }) => {
       if (response.data.success) {
         toast.success("Listing updated successfully");
         fetchListings();
+        fetchUserListings();
       }
     } catch (error) {
       console.error("Update Listing Error:", error);
@@ -110,6 +109,20 @@ const ListingContextProvider = ({ children }) => {
     }
   };
 
+  const getSingleListing = async (id) => {
+    try {
+      const response = await axios.get(
+        `${serverUrl}/api/listing/get-single/${id}`,
+      );
+      return response.data.listing;
+    } catch (error) {
+      console.error("Fetch User Listings Error:", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to fetch user listings",
+      );
+    }
+  };
+
   useEffect(() => {
     fetchListings();
     fetchUserListings();
@@ -123,6 +136,7 @@ const ListingContextProvider = ({ children }) => {
     userListings,
     fetchUserListings,
     fetchListings,
+    getSingleListing,
   };
   return (
     <ListingContext.Provider value={value}>{children}</ListingContext.Provider>

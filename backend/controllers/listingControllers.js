@@ -148,7 +148,9 @@ export const deleteListing = async (req, res) => {
 
 export const getAllListings = async (req, res) => {
   try {
-    const listings = await ListingModel.find().populate("user", "name email");
+    const listings = await ListingModel.find()
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
     return res.status(200).json({ success: true, listings });
   } catch (error) {
     console.error("Error getting all listings:", error);
@@ -182,7 +184,9 @@ export const getSingleListing = async (req, res) => {
 export const getUserListings = async (req, res) => {
   try {
     const userId = req.userId;
-    const listings = await ListingModel.find({ user: userId });
+    const listings = await ListingModel.find({ user: userId }).sort({
+      createdAt: -1,
+    });
     return res.status(200).json({ success: true, listings });
   } catch (error) {
     console.error("Error getting user listings:", error);
