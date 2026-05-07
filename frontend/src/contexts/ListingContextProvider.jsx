@@ -17,7 +17,6 @@ const ListingContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Fetch Listings Error:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch listings");
     }
   };
 
@@ -103,9 +102,6 @@ const ListingContextProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Fetch User Listings Error:", error);
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch user listings",
-      );
     }
   };
 
@@ -117,9 +113,6 @@ const ListingContextProvider = ({ children }) => {
       return response.data.listing;
     } catch (error) {
       console.error("Fetch User Listings Error:", error);
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch user listings",
-      );
     }
   };
 

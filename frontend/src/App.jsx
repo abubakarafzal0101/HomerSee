@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import MyListings from "./pages/MyListings";
 import SingleListing from "./pages/SingleListing";
 import AllListings from "./pages/AllListings";
+import MyBookings from "./pages/MyBookings";
 const App = () => {
   const { user } = useContext(UserContext);
   return (
@@ -34,6 +35,10 @@ const App = () => {
         <Route
           path="/all-listings"
           element={user ? <AllListings /> : <Login />}
+        />
+        <Route
+          path="/my-bookings"
+          element={user ? <MyBookings /> : <Login />}
         />
       </Routes>
     </>

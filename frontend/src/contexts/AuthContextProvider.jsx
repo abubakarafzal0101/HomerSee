@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./UserContextProvider";
 import { ListingContext } from "./ListingContextProvider";
+import { BookingContext } from "./BookingContextProvider";
 
 export const AuthContext = createContext();
 
@@ -13,7 +14,7 @@ const AuthContextProvider = ({ children }) => {
 
   const { setToken } = useContext(UserContext);
   const { fetchUserListings, fetchListings } = useContext(ListingContext);
-
+  const { fetchUserBookings } = useContext(BookingContext);
   // 🔥 LOGIN
   const loginUser = async (formData) => {
     try {
@@ -31,6 +32,7 @@ const AuthContextProvider = ({ children }) => {
         setToken(response.data.token);
         fetchUserListings();
         fetchListings();
+        fetchUserBookings();
 
         navigate("/");
       }
@@ -54,6 +56,7 @@ const AuthContextProvider = ({ children }) => {
         setToken(response.data.token);
         fetchUserListings();
         fetchListings();
+        fetchUserBookings();
         navigate("/");
       }
     } catch (error) {
