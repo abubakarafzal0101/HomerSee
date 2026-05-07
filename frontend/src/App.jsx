@@ -12,11 +12,13 @@ import MyListings from "./pages/MyListings";
 import SingleListing from "./pages/SingleListing";
 import AllListings from "./pages/AllListings";
 import MyBookings from "./pages/MyBookings";
+import ScrollToTop from "./components/ScrollToTop";
 const App = () => {
   const { user } = useContext(UserContext);
   return (
     <>
       <Toaster />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={user ? <Home /> : <Login />} />
         <Route path="/login" element={user ? <Home /> : <Login />} />
